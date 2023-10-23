@@ -70,22 +70,8 @@ module Pod
     def run
       @message_bank.welcome_message
 
-      platform = self.ask_with_answers("What platform do you want to use?", ["iOS", "macOS"]).to_sym
-
-      case platform
-        when :macos
-          ConfigureMacOSSwift.perform(configurator: self)
-        when :ios
-          framework = self.ask_with_answers("What language do you want to use?", ["Swift", "ObjC"]).to_sym
-          case framework
-            when :swift
-              ConfigureSwift.perform(configurator: self)
-
-            when :objc
-              ConfigureIOS.perform(configurator: self)
-          end
-      end
-
+      ConfigureSwift.perform(configurator: self)
+      
       replace_variables_in_files
       clean_template_files
       rename_template_files
@@ -93,7 +79,7 @@ module Pod
       customise_prefix
       rename_classes_folder
       ensure_carthage_compatibility
-      reinitialize_git_repo
+      #reinitialize_git_repo
       run_pod_install
 
       @message_bank.farewell_message
@@ -113,12 +99,12 @@ module Pod
         system "pod install"
       end
 
-      `git add Example/#{pod_name}.xcodeproj/project.pbxproj`
-      `git commit -m "Initial commit"`
+      #`git add Example/#{pod_name}.xcodeproj/project.pbxproj`
+      #`git commit -m "Initial commit"`
     end
 
     def clean_template_files
-      ["./**/.gitkeep", "configure", "_CONFIGURE.rb", "README.md", "LICENSE", "templates", "setup", "CODE_OF_CONDUCT.md"].each do |asset|
+      ["./**/.gitkeep", "configure", "_CONFIGURE.rb", "README.md", "LICENSE", "templates", "setup", "CODE_OF_CONDUCT.md", ".travis.yml", ".git"].each do |asset|
         `rm -rf #{asset}`
       end
     end
@@ -179,6 +165,13 @@ module Pod
 
     def rename_classes_folder
       FileUtils.mv "Pod", @pod_name
+      FileUtils.mv "#{pod_name}/Source/ReplaceMe.swift", "#{pod_name}/Source/#{pod_name}Composer.swift"
+      FileUtils.mv "#{pod_name}/Source/Classes/Data/Repositories/Repository.swift", "#{pod_name}/Source/Classes/Data/Repositories/#{pod_name}Repository.swift"
+      FileUtils.mv "#{pod_name}/Source/Classes/Domain/Entities/Entity.swift", "#{pod_name}/Source/Classes/Domain/Entities/#{pod_name}Entity.swift"
+      FileUtils.mv "#{pod_name}/Source/Classes/Domain/Interfaces/RepositoryProtocol.swift", "#{pod_name}/Source/Classes/Domain/Interfaces/#{pod_name}RepositoryProtocol.swift"
+      FileUtils.mv "#{pod_name}/Source/Classes/Domain/UseCases/UseCase.swift", "#{pod_name}/Source/Classes/Domain/UseCases/#{pod_name}UseCase.swift"
+      FileUtils.mv "#{pod_name}/Source/Classes/Presentation/View.swift", "#{pod_name}/Source/Classes/Presentation/#{pod_name}View.swift"
+      FileUtils.mv "#{pod_name}/Source/Resources/Assets.xcassets", "#{pod_name}/Source/Resources/#{pod_name}.xcassets"
     end
 
     def reinitialize_git_repo
