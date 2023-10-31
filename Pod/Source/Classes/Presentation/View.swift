@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-struct View: View {
+struct ExampleView: View {
     
     var body: some View {
         NavigationView {
