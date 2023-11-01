@@ -24,5 +24,6 @@ Pod::Spec.new do |s|
   s.subspec 'Resources' do |resources|
       resources.resource_bundle = {'${POD_NAME}' => ['${POD_NAME}/Source/**/*.{xcassets,json,storyboard,xib,xcdatamodeld}']}
   end
-  # s.dependency 'AFNetworking', '~> 2.3'
+  # s.dependency 'ABCore'
+  # s.dependency 'ABUIComponents'
 end
